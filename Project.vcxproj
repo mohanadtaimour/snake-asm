@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- When Main.asm is added to the project, exclude TestSnake.asm from the build in both Debug and Release. In Solution Explorer, right-click TestSnake.asm, choose Properties, and set Excluded From Build to Yes. Keep TestSnake.asm in the repository for the test report. -->
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -12,12 +11,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <MASM Include="Display.asm" />
+    <MASM Include="Input.asm" />
+    <MASM Include="Main.asm" />
     <MASM Include="Snake.asm" />
     <MASM Include="Game.asm" />
-    <MASM Include="TestSnake.asm" />
+    <MASM Include="TestDisplay.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </MASM>
+    <MASM Include="TestGame.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </MASM>
+    <MASM Include="TestInput.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </MASM>
+    <MASM Include="TestSnake.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </MASM>
   </ItemGroup>
   <ItemGroup>
     <None Include="SnakeDefs.inc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="docs\TestCases.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4164AA65-1EF9-4E69-899B-D1BED776070B}</ProjectGuid>
