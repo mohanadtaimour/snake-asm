@@ -27,10 +27,12 @@ CheckDword MACRO testName, actualVal, expectedVal
 	.data
 	nameStr BYTE testName, 0
 	.code
-	mov eax, actualVal
-	mov ebx, expectedVal
-	mov edx, OFFSET nameStr
-	call ReportTest
+	pushad                             ; save every register for the caller
+	mov eax, actualVal                 ; EAX receives the actual value
+	mov ebx, expectedVal               ; EBX receives the expected value
+	mov edx, OFFSET nameStr            ; EDX receives the test name address
+	call ReportTest                    ; print the check and update totals
+	popad                              ; restore every register for the caller
 ENDM
 
 CheckByte MACRO testName, actualVal, expectedVal
@@ -38,10 +40,12 @@ CheckByte MACRO testName, actualVal, expectedVal
 	.data
 	nameStr BYTE testName, 0
 	.code
-	movzx eax, actualVal
-	mov ebx, expectedVal
-	mov edx, OFFSET nameStr
-	call ReportTest
+	pushad                             ; save every register for the caller
+	movzx eax, actualVal               ; EAX receives the zero-extended actual byte
+	mov ebx, expectedVal               ; EBX receives the expected value
+	mov edx, OFFSET nameStr            ; EDX receives the test name address
+	call ReportTest                    ; print the check and update totals
+	popad                              ; restore every register for the caller
 ENDM
 
 .data
