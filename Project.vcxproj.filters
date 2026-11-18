@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+	<Filter Include="Backend">
+	  <UniqueIdentifier>{A1A1A1A1-1111-1111-1111-111111111111}</UniqueIdentifier>
+	</Filter>
+	<Filter Include="Frontend">
+	  <UniqueIdentifier>{B2B2B2B2-2222-2222-2222-222222222222}</UniqueIdentifier>
+	</Filter>
+  </ItemGroup>
+  <ItemGroup>
+	<MASM Include="backend\Snake.asm">
+	  <Filter>Backend</Filter>
+	</MASM>
+	<MASM Include="backend\Game.asm">
+	  <Filter>Backend</Filter>
+	</MASM>
+	<MASM Include="backend\TestSnake.asm">
+	  <Filter>Backend</Filter>
+	</MASM>
+	<MASM Include="backend\TestGame.asm">
+	  <Filter>Backend</Filter>
+	</MASM>
+	<MASM Include="frontend\Display.asm">
+	  <Filter>Frontend</Filter>
+	</MASM>
+	<MASM Include="frontend\Input.asm">
+	  <Filter>Frontend</Filter>
+	</MASM>
+	<MASM Include="frontend\Main.asm">
+	  <Filter>Frontend</Filter>
+	</MASM>
+	<MASM Include="frontend\TestDisplay.asm">
+	  <Filter>Frontend</Filter>
+	</MASM>
+	<MASM Include="frontend\TestInput.asm">
+	  <Filter>Frontend</Filter>
+	</MASM>
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="SnakeDefs.inc" />
+  </ItemGroup>
+  <ItemGroup>
+	<Text Include="docs\TestCases.txt" />
+  </ItemGroup>
+</Project>

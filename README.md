@@ -17,16 +17,18 @@ ESC during play returns to the menu. The high score is saved on death and when q
 
 ## Files
 
+The backend folder holds the snake engine and game rules with their tests. The frontend folder holds drawing, keyboard input, the main loop and their tests. SnakeDefs.inc stays at the repository root as the shared contract.
+
 - SnakeDefs.inc - shared contract. Used by the whole team.
-- Snake.asm - Member 1 owns the snake engine.
-- TestSnake.asm - Member 1 owns the snake-engine unit tests.
-- Display.asm - Member 1 owns drawing and display.
-- TestDisplay.asm - Member 1 owns the visual display tests.
-- Game.asm - Member 2 owns game rules and high-score handling.
-- Input.asm - Member 2 owns keyboard input.
-- Main.asm - Member 2 owns the real main loop and entry point.
-- TestGame.asm - Member 2 owns the game-rule unit tests.
-- TestInput.asm - Member 2 owns the keyboard input test.
+- backend\Snake.asm - Member 1 owns the snake engine.
+- backend\TestSnake.asm - Member 1 owns the snake-engine unit tests.
+- frontend\Display.asm - Member 1 owns drawing and display.
+- frontend\TestDisplay.asm - Member 1 owns the visual display tests.
+- backend\Game.asm - Member 2 owns game rules and high-score handling.
+- frontend\Input.asm - Member 2 owns keyboard input.
+- frontend\Main.asm - Member 2 owns the real main loop and entry point.
+- backend\TestGame.asm - Member 2 owns the game-rule unit tests.
+- frontend\TestInput.asm - Member 2 owns the keyboard input test.
 - highscore.dat is created next to the running program.
 
 ## Tests

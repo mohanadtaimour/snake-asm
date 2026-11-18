@@ -11,29 +11,30 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="Display.asm" />
-    <MASM Include="Input.asm" />
-    <MASM Include="Main.asm" />
-    <MASM Include="Snake.asm" />
-    <MASM Include="Game.asm" />
-    <MASM Include="TestDisplay.asm">
+    <MASM Include="frontend\Display.asm" />
+    <MASM Include="frontend\Input.asm" />
+    <MASM Include="frontend\Main.asm" />
+    <MASM Include="backend\Snake.asm" />
+    <MASM Include="backend\Game.asm" />
+    <MASM Include="frontend\TestDisplay.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </MASM>
-    <MASM Include="TestGame.asm">
+    <MASM Include="backend\TestGame.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </MASM>
-    <MASM Include="TestInput.asm">
+    <MASM Include="frontend\TestInput.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </MASM>
-    <MASM Include="TestSnake.asm">
+    <MASM Include="backend\TestSnake.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </MASM>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Project.vcxproj.filters" />
     <None Include="SnakeDefs.inc" />
   </ItemGroup>
   <ItemGroup>
@@ -74,7 +75,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <MASM>
       <AssembledCodeListingFile>$(ProjectName).lst</AssembledCodeListingFile>
-      <IncludePaths>c:\Irvine</IncludePaths>
+      <IncludePaths>$(ProjectDir);c:\Irvine</IncludePaths>
       <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
       <WarningLevel>3</WarningLevel>
       <NoLogo>true</NoLogo>
@@ -105,7 +106,7 @@
     </Link>
     <MASM>
       <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-      <IncludePaths>c:\Irvine</IncludePaths>
+      <IncludePaths>$(ProjectDir);c:\Irvine</IncludePaths>
       <UseSafeExceptionHandlers>false</UseSafeExceptionHandlers>
     </MASM>
   </ItemDefinitionGroup>
