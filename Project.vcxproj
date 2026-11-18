@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- When Main.asm is added to the project, exclude TestSnake.asm from the build in both Debug and Release. In Solution Explorer, right-click TestSnake.asm, choose Properties, and set Excluded From Build to Yes. Keep TestSnake.asm in the repository for the test report. -->
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
