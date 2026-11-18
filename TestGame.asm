@@ -170,17 +170,10 @@ TestNormalAndEat PROC
 	mov score, 0                        ; set the score to a known value
 	mov foodsEaten, 0                   ; set food count to zero
 	mov gameLevel, 1                    ; set level 1
-	movzx eax, snakeX[0]                ; EAX holds the head column
-	movzx ebx, snakeX[0]                ; EBX holds the head backup
-	movzx ecx, snakeY[0]                ; ECX holds the head row
-	mov dl, snakeX[0]                   ; DL is not needed for setup
-	mov dh, snakeY[0]
-	movzx edx, snakeX[0]                ; EDX backup no longer used
+	mov ebx, snakeLength                ; EBX saves the expected normal length
 
 	mov foodX, 0                        ; place food outside the right path
 	mov foodY, 0                        ; keep it away from the snake
-	mov eax, snakeLength                ; EAX saves length
-	mov ebx, eax                        ; EBX saves length
 	call GameTick                       ; move one normal step
 	CheckDword "Normal tick result", eax, TICK_OK
 	CheckDword "Normal length unchanged", snakeLength, ebx
@@ -196,11 +189,7 @@ TestNormalAndEat PROC
 	mov al, snakeY[0]                   ; AL receives head row
 	mov foodY, al                       ; place food on the head row
 	call GameTick                       ; eat and grow one segment
-	mov eax, eax                        ; keep tick result visible
-	cmp eax, TICK_ATE                   ; check expected eat result
-	jne EatWrongTick                    ; wrong result: report it
 	CheckDword "Eat tick result", eax, TICK_ATE
-EatWrongTick:
 	CheckDword "Eat score", score, POINTS_PER_FOOD
 	CheckDword "Eat foodsEaten", foodsEaten, 1
 	CheckDword "Eat length", snakeLength, START_LENGTH+1
