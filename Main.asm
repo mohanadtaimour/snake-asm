@@ -40,7 +40,6 @@ NewGame:
 	mov prevState, STATE_PLAYING       ; initialize the pause state comparison
 	call DrawAll                       ; draw the complete new game once
 
-GameLoop:
 WaitPhase:
 	call GetMseconds                   ; read the millisecond clock
 	mov startTime, eax                 ; remember the timing phase start
@@ -86,8 +85,6 @@ PauseStateSaved:
 	cmp gameState, STATE_PLAYING       ; should the normal frame be drawn?
 	jne WaitPhase                      ; paused: skip all incremental drawing
 
-	push eax                           ; save the tick result for DrawFrame
-	pop eax                            ; restore the tick result into EAX
 	call DrawFrame                     ; incrementally draw the moving snake
 	jmp WaitPhase                      ; start the next timing phase
 

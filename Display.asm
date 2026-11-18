@@ -343,6 +343,27 @@ DrawGameOver PROC USES eax ebx ecx edx esi edi
 ;---------------------------------------------------------------------
 	push eax                           ; save the new-high-score flag
 
+	mov eax, white + (black * 16)      ; use normal text color for spaces
+	call SetTextColor                  ; set the blank-panel color
+	mov ebx, 7                         ; EBX starts at the first blank-panel row
+	mov ecx, 8                         ; ECX counts eight blank-panel rows
+GameOverBlankRows:
+	push ecx                           ; save the remaining row count
+	mov dh, bl                         ; DH is this blank-panel row
+	mov esi, 4                         ; ESI starts at blank-panel column 4
+	mov ecx, 22                        ; ECX counts 22 blank columns
+GameOverBlankColumns:
+	mov eax, esi                       ; EAX holds this blank-panel column
+	mov dl, al                         ; DL is this blank-panel column
+	call Gotoxy                        ; move to the blank-panel cell
+	mov al, ' '                        ; AL is the erase character
+	call WriteChar                     ; erase one old board character
+	inc esi                            ; move to the next blank-panel column
+	loop GameOverBlankColumns          ; repeat across this row
+	inc ebx                            ; move to the next blank-panel row
+	pop ecx                            ; restore the remaining row count
+	loop GameOverBlankRows             ; repeat for eight rows
+
 	mov dl, 5                          ; set the left message column
 	mov dh, 8                          ; set the first game-over row
 	call Gotoxy                        ; move inside the board area
@@ -429,7 +450,7 @@ PausedDone:
 DrawPaused ENDP
 
 ;---------------------------------------------------------------------
-ParkCursor PROC
+ParkCursor PROC USES edx
 ;
 ; Moves the blinking cursor away from the game board.
 ; Receives: nothing
@@ -438,7 +459,7 @@ ParkCursor PROC
 	mov dl, 0                          ; set cursor column zero
 	mov dh, MSG_ROW                    ; set cursor row MSG_ROW
 	call Gotoxy                        ; move the cursor to the bottom row
-	ret                                ; ParkCursor keeps all registers unchanged
+	ret                                ; USES restores EDX
 ParkCursor ENDP
 
 END
