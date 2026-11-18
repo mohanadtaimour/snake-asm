@@ -29,7 +29,9 @@ ShowPrompt PROC USES eax edx
 ; Receives: EDX = prompt string
 ; Returns:  nothing
 ;---------------------------------------------------------------------
-	call Crlf                          ; leave some console space
+	mov dl, 0                          ; set prompt column zero
+	mov dh, MSG_ROW                    ; set prompt row MSG_ROW
+	call Gotoxy                        ; move the cursor to the bottom row
 	call WriteString                   ; print the prompt
 	call ReadChar                      ; wait for a key between display steps
 	call Clrscr                        ; clear before the next display step
