@@ -8,3 +8,5 @@ To retarget it, right-click the project in Solution Explorer, choose Properties,
 ## Tests
 
 When Main.asm is added to the project, right-click TestSnake.asm, choose Properties, and set Excluded From Build to Yes for both Debug and Release. Keep the file in the repository because it is needed for the test report.
+
+The game creates highscore.dat next to where the program runs. Visual Studio is configured to run it from the project folder.
