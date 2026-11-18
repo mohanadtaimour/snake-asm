@@ -439,9 +439,6 @@ TestFileOperations PROC
 ; Receives: nothing
 ; Returns:  nothing
 ;---------------------------------------------------------------------
-	mov eax, highScore                  ; EAX holds the current high score
-	mov savedHighScore, eax             ; back up the high score
-
 	mov highScore, 1234                 ; set a known saved value
 	call SaveHighScore                  ; write the four-byte value
 	mov highScore, 0                    ; clear before loading
@@ -476,9 +473,6 @@ ShortFileDone:
 	call GameTick                        ; death must not lower high score
 	CheckDword "High score never lowers", highScore, 500
 
-	mov eax, savedHighScore              ; EAX holds original high score
-	mov highScore, eax                   ; restore original high score
-	call SaveHighScore                  ; save the original record back
 	ret                                 ; file tests are complete
 TestFileOperations ENDP
 
@@ -489,6 +483,10 @@ main PROC
 ; Receives: nothing
 ; Returns:  nothing
 ;---------------------------------------------------------------------
+	call LoadHighScore                  ; load the player's real saved high score
+	mov eax, highScore                  ; EAX holds the value loaded from the file
+	mov savedHighScore, eax             ; save it for final restoration
+
 	PrintText "===== Game.asm unit tests ====="
 	call Crlf
 	call TestInitGame
@@ -513,6 +511,9 @@ main PROC
 	call WriteDec
 	call Crlf
 	call WaitMsg
+	mov eax, savedHighScore             ; EAX holds the original real high score
+	mov highScore, eax                  ; restore the original value
+	call SaveHighScore                  ; perform the final file write
 	exit
 main ENDP
 
