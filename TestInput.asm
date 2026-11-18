@@ -16,6 +16,9 @@ guide3 BYTE "Press ESC to end this test",0
 directionText BYTE " direction=",0
 stateText BYTE " state=",0
 resultText BYTE " inputResult=",0
+prevDirection DWORD 0FFFFFFFFh
+prevState DWORD 0FFFFFFFFh
+prevInput DWORD 0FFFFFFFFh
 
 .code
 
@@ -51,6 +54,22 @@ TestInputLoop:
 	call ReadInput                     ; read and apply all waiting keys
 	mov ebx, eax                       ; EBX saves the input result
 
+	mov eax, currentDir                ; EAX holds the current direction
+	cmp eax, prevDirection             ; did the direction change?
+	jne PrintInputStatus               ; yes: print a status line
+	mov eax, gameState                 ; EAX holds the current state
+	cmp eax, prevState                 ; did the state change?
+	jne PrintInputStatus               ; yes: print a status line
+	cmp ebx, prevInput                 ; did the input result change?
+	je SkipInputStatus                 ; no: do not print a status line
+
+PrintInputStatus:
+	mov eax, currentDir                ; EAX holds current direction
+	mov prevDirection, eax             ; remember the printed direction
+	mov eax, gameState                 ; EAX holds current state
+	mov prevState, eax                 ; remember the printed state
+	mov prevInput, ebx                 ; remember the printed input result
+
 	mov edx, OFFSET directionText      ; EDX points to direction label
 	call WriteString                   ; print direction label
 	mov eax, currentDir                ; EAX holds current direction
@@ -67,9 +86,12 @@ TestInputLoop:
 	call WriteDec                      ; print INPUT_NONE or INPUT_QUIT
 	call Crlf                          ; move to the next status line
 
+SkipInputStatus:
 	cmp ebx, INPUT_QUIT                ; did ESC stop the test?
 	je TestInputDone                   ; yes: finish the test
-	jmp TestInputLoop                  ; no: read the next key
+	mov eax, 30                        ; Delay receives milliseconds in EAX
+	call Delay                         ; wait before checking the keyboard again
+	jmp TestInputLoop                  ; read the next key
 
 TestInputDone:
 	call WaitMsg                       ; keep the result window open
