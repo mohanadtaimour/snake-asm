@@ -72,3 +72,33 @@ GameTick      PROTO
 TogglePause   PROTO
 LoadHighScore PROTO
 SaveHighScore PROTO
+
+; ---------- Screen layout (console is 80 columns x 25 rows) ----------
+; Board cell (x, y) is drawn at screen column (x + OFFSET_X), row (y + OFFSET_Y).
+OFFSET_X = 1
+OFFSET_Y = 3
+HUD_ROW = 0
+MSG_ROW = 24
+; The border is drawn on screen columns 0 and BOARD_WIDTH+1, and on screen rows OFFSET_Y-1 and OFFSET_Y+BOARD_HEIGHT.
+
+; ---------- Results returned by ReadInput ----------
+INPUT_NONE = 0
+INPUT_QUIT = 1
+
+; ---------- Results returned by WaitMenuChoice ----------
+MENU_QUIT = 0
+MENU_PLAY = 1
+
+; ---------- Frontend procedures ----------
+DrawBorder PROTO
+DrawHUD PROTO
+DrawSnake PROTO
+DrawFood PROTO
+DrawAll PROTO
+DrawFrame PROTO
+DrawMenu PROTO
+DrawGameOver PROTO
+DrawPaused PROTO
+ParkCursor PROTO
+ReadInput PROTO
+WaitMenuChoice PROTO
