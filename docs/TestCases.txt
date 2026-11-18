@@ -1,0 +1,79 @@
+Testing and Verification
+
+Snake.asm
+Test number | What is tested | Input or setup | Expected output | Actual output
+1 | InitSnake | Call InitSnake | Length 3, head at board middle, body on left, direction right | 
+2 | Move right | InitSnake, move right three times | Length stays 3 and all positions move right | 
+3 | Opposite direction | InitSnake, SetDirection LEFT | LEFT is ignored and RIGHT remains | 
+4 | Quick direction change | Press UP then LEFT before a real move | UP is accepted and LEFT is ignored | 
+5 | Invalid directions | SetDirection with 4, 7 and -1 | All invalid values are ignored | 
+6 | Wall checks | All four walls and wrapped -1 values | Outside cells return hit, board edges are inside | 
+7 | Tail self-hit rule | Two-by-two square, tail cell, not growing | Tail cell is safe; another body cell is hit | 
+8 | Moving and growing | Call MoveSnake with grow 0 and 1 | Normal move erases tail; growing adds segment | 
+9 | Maximum length | Set length to MAX_SNAKE_LEN and grow | Length stays at maximum | 
+
+Game.asm
+Test number | What is tested | Input or setup | Expected output | Actual output
+1 | InitGame | Set old high score and call InitGame | Score 0, level 1, delay 150, playing, length 3, high score unchanged | 
+2 | SpawnFood 500 times | Call SpawnFood 500 times | Every food is inside board and not on the snake | 
+3 | Normal tick | Put food away from next head cell | TICK_OK and snake moves one cell, length unchanged | 
+4 | Eat food | Put food directly ahead | TICK_ATE, score +10, one food eaten, length grows, valid new food | 
+5 | Fifth food | Set foodsEaten 4 and put food ahead | Level 2 and tickDelay 135 | 
+6 | Minimum delay | Set foodsEaten high and eat | tickDelay is 50 or greater and never below MIN_DELAY | 
+7 | Higher-level score | Eat the fifth food at level 1 | Gains 10 points, then level becomes 2 | 
+8 | Four walls | Place head by each wall and move outward | TICK_DIED and STATE_GAMEOVER for each wall | 
+9 | Own body | Move next head into a body segment | TICK_DIED | 
+10 | Tail cell | Move into tail while not growing | No death and normal move | 
+11 | Paused tick | Set STATE_PAUSED and call GameTick | TICK_OK and snake does not move | 
+12 | TogglePause | Toggle in playing and paused | Playing becomes paused, paused becomes playing | 
+13 | Toggle invalid states | Toggle in menu and game-over | State remains unchanged | 
+14 | Register preservation | Set EBX, ECX, EDX sentinels and call GameTick | EBX, ECX and EDX remain unchanged | 
+15 | Save and load | Save 1234 then load | High score is 1234 | 
+16 | Missing file | Delete highscore.dat and load | High score becomes 0 | 
+17 | Corrupt file | Write only two bytes and load | High score becomes 0 | 
+18 | High score monotonic | Set old high score 500 and final score 100 | High score remains 500 | 
+
+Display.asm
+Test number | What is tested | Input or setup | Expected output | Actual output
+1 | DrawBorder | Call DrawBorder | Gray # border around the board | 
+2 | DrawHUD score 99 | Set score 99 and call DrawHUD | Score 99 printed in yellow with no extras | 
+3 | DrawHUD 99 to 100 | Set score 100 and call DrawHUD | Score 100 printed and old text is fully replaced | 
+4 | DrawHUD 100 to 90 | Set score 90 and call DrawHUD | No stray hundred digit remains | 
+5 | DrawSnake | Normal 3-segment snake | Head O, bodies o, green and light-green colors | 
+6 | DrawFood | Valid food position | Red * at food position | 
+7 | DrawFrame normal | TICK_OK normal move | Tail erased, segment 1 and head redrawn | 
+8 | DrawFrame eat | TICK_ATE move | Frame updates and food and HUD redraw | 
+9 | DrawMenu | Call DrawMenu | SNAKE title, high score, choices and controls visible | 
+10 | DrawGameOver no record | EAX = 0 | GAME OVER, score, high score, replay and menu lines | 
+11 | DrawGameOver record | EAX = 1 | NEW HIGH SCORE also appears | 
+12 | DrawPaused | EAX = 1 then 0 | PAUSED appears and spaces hide it | 
+
+Input.asm
+Test number | What is tested | Input or setup | Expected output | Actual output
+1 | No key | Empty keyboard buffer | ReadInput returns INPUT_NONE | 
+2 | Arrow directions | Press each arrow while playing | Current direction changes to matching DIR constant | 
+3 | WASD | Press W, A, S, D in both cases | Matching DIR constants are selected | 
+4 | Quick Up then Left | Press UP then LEFT before a tick | LEFT is ignored by SetDirection; UP remains | 
+5 | Paused arrows | Pause and press an arrow | Direction does not change | 
+6 | P pause and resume | Press P while playing and again while paused | State changes playing to paused and back | 
+7 | P invalid state | Press P in menu or game-over | State remains unchanged | 
+8 | ESC read | Press ESC | ReadInput returns INPUT_QUIT | 
+9 | WaitMenuChoice ENTER | Press ENTER in menu waiter | WaitMenuChoice returns MENU_PLAY | 
+10 | WaitMenuChoice ESC | Press ESC in menu waiter | WaitMenuChoice returns MENU_QUIT | 
+
+Whole game
+Test number | What is tested | Input or setup | Expected output | Actual output
+1 | Start menu | Start program | Menu displays high score and choices | 
+2 | Enter play | Press ENTER | A new game starts and full board is drawn | 
+3 | Replay | Die, press ENTER | New game starts with the correct state | 
+4 | ESC menu | Die, press ESC | Game returns to menu | 
+5 | ESC during play | Press ESC during active game | Save high score and return to menu | 
+6 | ESC exit | Quit from menu | Program prints goodbye and exits | 
+7 | Pause and resume | Press P twice | PAUSED appears and disappears | 
+8 | Score zero | Start game and avoid food | Score remains 0 | 
+9 | Score 99999 | Set or reach score 99999 | HUD prints 99999 and trailing text clears old characters | 
+10 | Food by wall | Spawn or set food next to a wall | Food appears correctly inside the playable board | 
+11 | Long snake | Set or grow a long snake | Long segments draw safely and frame handles it | 
+12 | Missing high score file | Delete file and start | High score is 0 | 
+13 | Pause then ESC | Pause, press ESC | Quit logic saves and returns to menu | 
+14 | Replay after wall death | Hit a wall, enter replay | New snake and fresh score are initialized | 
