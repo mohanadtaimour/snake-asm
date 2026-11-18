@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <MASM Include="Snake.asm" />
+    <MASM Include="Game.asm" />
     <MASM Include="TestSnake.asm" />
   </ItemGroup>
   <ItemGroup>
