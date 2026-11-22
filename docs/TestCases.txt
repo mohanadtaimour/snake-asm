@@ -36,7 +36,7 @@ Test number | What is tested | Input or setup | Expected output | Actual output
 19 | SetDifficulty | Call with DIFF_EASY, DIFF_NORMAL and DIFF_HARD | startDelay/delayStep become 200/10, 150/15 and 100/12 | 
 20 | SetDifficulty invalid | Call with 3 and -1 | Difficulty, startDelay and delayStep stay unchanged | 
 21 | Difficulty in a new game | Set Hard, call InitGame | tickDelay is 100 | 
-22 | PlaceObstacles | Call PlaceObstacles 200 times | Count is OBSTACLE_COUNT, no duplicates, none in the three start-corridor rows | 
+22 | PlaceObstacles | Set obstaclesOn to 1, then call PlaceObstacles 200 times | Count is OBSTACLE_COUNT, no duplicates, none in the three start-corridor rows |
 23 | Obstacle hit | Put an obstacle in the next head cell | TICK_DIED and STATE_GAMEOVER | 
 24 | IsCellBlocked | Test snake, obstacle, food and special cells and a free cell | 1 for the first four, 0 for the free cell | 
 25 | Golden food | Set foodType FOOD_GOLDEN at level 1 and eat | Score +30, length +1, one food eaten | 
@@ -46,6 +46,8 @@ Test number | What is tested | Input or setup | Expected output | Actual output
 29 | Special expiry | Give a special 100 ms left and tick with tickDelay 150 | specialType becomes SPECIAL_NONE | 
 30 | Special timer paused | Set STATE_PAUSED and call GameTick | specialTimeLeft does not change | 
 31 | Special spawn | Eat the third food with no special active | A special item appears on a free cell | 
+32 | ToggleObstacles | Start with obstaclesOn 1, toggle twice | obstaclesOn changes to 0 and back to 1 |
+33 | PlaceObstacles disabled | Set obstaclesOn to 0 and call PlaceObstacles | obstacleCount is 0 |
 
 Display.asm
 Test number | What is tested | Input or setup | Expected output | Actual output
@@ -68,6 +70,7 @@ Test number | What is tested | Input or setup | Expected output | Actual output
 17 | DrawPauseMenu | EAX = 0, 1, 2 | Box with PAUSED and three items; selected item is yellow with > | 
 18 | DrawDifficulty | Select each difficulty | Chosen name is yellow, others white | 
 19 | DrawFrame special | TICK_BONUS and TICK_POISON | HUD refreshes; special item erased and head not erased | 
+20 | DrawObstacleOption | Set On and Off, then draw the option | Selected choice is yellow |
 
 Input.asm
 Test number | What is tested | Input or setup | Expected output | Actual output
@@ -87,6 +90,7 @@ Test number | What is tested | Input or setup | Expected output | Actual output
 14 | WaitGameOverChoice | Press ENTER, R, r, then ESC | MENU_PLAY for the first three, MENU_QUIT for ESC | 
 15 | RunPauseMenu navigation | Press Down, Down, Down, Up | Selection wraps: Restart, Quit, Resume, Quit | 
 16 | RunPauseMenu choices | Press ENTER on each item; press P; press ESC | Returns PAUSE_RESUME, PAUSE_RESTART, PAUSE_QUIT; P and ESC return PAUSE_RESUME | 
+17 | MenuInput O key | Press O or o in the menu | Toggles and redraws the line; menu keeps waiting |
 
 Sound.asm
 Test number | What is tested | Input or setup | Expected output | Actual output
@@ -127,3 +131,5 @@ Test number | What is tested | Input or setup | Expected output | Actual output
 25 | Special items | Eat the third food, then wait 6 seconds | A bonus or poison item appears, blinks near the end and vanishes | 
 26 | Poison and bonus | Eat each special item | Score drops by 20 (not below 0) or rises by 50 times the level | 
 27 | Music toggle | Press M during play | Music stops and starts | 
+28 | Obstacles off | Press O in the menu so it shows Off, then play | No gray blocks appear |
+29 | Obstacles on | Press O so it shows On, then play | Eight gray blocks appear and hitting one ends the game |

@@ -243,6 +243,10 @@ MenuInputLoop:
 	je MenuChooseNormal                ; yes: update and redraw difficulty
 	cmp al, '3'                         ; did the player select Hard?
 	je MenuChooseHard                  ; yes: update and redraw difficulty
+	cmp al, 'O'                         ; did the player toggle obstacles?
+	je MenuToggleObstacles             ; yes: update and redraw the option
+	cmp al, 'o'                         ; did the player toggle obstacles?
+	je MenuToggleObstacles             ; yes: update and redraw the option
 	jmp MenuInputLoop                  ; ignore any other key
 
 MenuChooseEasy:
@@ -261,6 +265,11 @@ MenuChooseHard:
 	mov eax, DIFF_HARD                  ; EAX selects Hard
 	call SetDifficulty                 ; store Hard speed settings
 	call DrawDifficulty                ; update the highlighted choice
+	jmp MenuInputLoop                  ; continue waiting for a menu choice
+
+MenuToggleObstacles:
+	call ToggleObstacles               ; switch obstacle generation on or off
+	call DrawObstacleOption            ; update the menu option line
 	jmp MenuInputLoop                  ; continue waiting for a menu choice
 
 MenuPlayChoice:

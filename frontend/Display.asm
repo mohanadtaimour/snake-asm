@@ -43,6 +43,10 @@ difficultyNormal BYTE "Normal",0              ; Normal choice text
 difficultyHard BYTE "Hard",0                  ; Hard choice text
 difficultySeparator BYTE " / ",0              ; separator between choices
 difficultyHint BYTE "   (press 1, 2 or 3)",0 ; menu key hint
+obstacleOptionLabel BYTE "Obstacles: ",0        ; obstacle setting label
+obstacleOptionOn BYTE "On",0                    ; obstacles enabled text
+obstacleOptionOff BYTE "Off",0                  ; obstacles disabled text
+obstacleOptionHint BYTE "   (press O)",0       ; obstacle toggle hint
 drawnSpecialType BYTE SPECIAL_NONE  ; type currently drawn on the board
 drawnSpecialX BYTE 0               ; column of the drawn special item
 drawnSpecialY BYTE 0               ; row of the drawn special item
@@ -561,6 +565,7 @@ DrawMenu PROC
 	mov edx, OFFSET menuControls       ; EDX points to the controls text
 	call WriteString                   ; print the controls hint
 	call DrawDifficulty                ; show the current difficulty choice
+	call DrawObstacleOption            ; show the current obstacle setting
 
 	mov eax, white + (black * 16)      ; restore white on black
 	call SetTextColor                  ; apply normal color
@@ -637,6 +642,59 @@ DrawHardText:
 	popad                              ; restore all registers
 	ret                                ; DrawDifficulty changes no registers
 DrawDifficulty ENDP
+
+;---------------------------------------------------------------------
+DrawObstacleOption PROC
+;
+; Prints the obstacle setting and highlights the current choice.
+; Receives: nothing
+; Returns:  nothing (all registers are preserved)
+;---------------------------------------------------------------------
+	pushad                             ; preserve all registers used for drawing
+	mov dl, 0                          ; start the option line at column zero
+	mov dh, 13                         ; print on menu row thirteen
+	call Gotoxy                        ; move to the obstacle option line
+	mov eax, white + (black * 16)      ; use normal color for the label
+	call SetTextColor                  ; apply white on black
+	mov edx, OFFSET obstacleOptionLabel ; EDX points to the label
+	call WriteString                   ; print Obstacles
+
+	cmp obstaclesOn, 1                 ; are obstacles enabled?
+	jne DrawObstaclesOnNormal          ; no: show On in white
+	mov eax, yellow + (black * 16)     ; highlight the selected On choice
+	call SetTextColor                  ; apply yellow on black
+	jmp DrawObstaclesOnText            ; print the selected choice
+DrawObstaclesOnNormal:
+	mov eax, white + (black * 16)      ; unselected choice uses white
+	call SetTextColor                  ; apply white on black
+DrawObstaclesOnText:
+	mov edx, OFFSET obstacleOptionOn   ; EDX points to On
+	call WriteString                   ; print On
+	mov eax, white + (black * 16)      ; separator uses normal color
+	call SetTextColor                  ; apply white on black
+	mov edx, OFFSET difficultySeparator ; EDX points to the separator
+	call WriteString                   ; print the separator
+
+	cmp obstaclesOn, 0                 ; are obstacles disabled?
+	jne DrawObstaclesOffNormal         ; no: show Off in white
+	mov eax, yellow + (black * 16)     ; highlight the selected Off choice
+	call SetTextColor                  ; apply yellow on black
+	jmp DrawObstaclesOffText           ; print the selected choice
+DrawObstaclesOffNormal:
+	mov eax, white + (black * 16)      ; unselected choice uses white
+	call SetTextColor                  ; apply white on black
+DrawObstaclesOffText:
+	mov edx, OFFSET obstacleOptionOff  ; EDX points to Off
+	call WriteString                   ; print Off
+	mov eax, white + (black * 16)      ; hint uses normal color
+	call SetTextColor                  ; apply white on black
+	mov edx, OFFSET obstacleOptionHint ; EDX points to the O key hint
+	call WriteString                   ; print the hint
+	mov eax, white + (black * 16)      ; restore white on black
+	call SetTextColor                  ; apply normal console color
+	popad                              ; restore all registers
+	ret                                ; return without changing registers
+DrawObstacleOption ENDP
 
 ;---------------------------------------------------------------------
 DrawGameOver PROC USES eax ebx ecx edx esi edi

@@ -92,6 +92,7 @@ EXTERNDEF specialTimeLeft:DWORD ; milliseconds until the item expires
 EXTERNDEF obstacleX:BYTE      ; array[MAX_OBSTACLES], obstacle columns
 EXTERNDEF obstacleY:BYTE      ; array[MAX_OBSTACLES], obstacle rows
 EXTERNDEF obstacleCount:DWORD ; number of obstacles placed
+EXTERNDEF obstaclesOn:DWORD   ; 1 = obstacles on, 0 = obstacles off
 EXTERNDEF score:DWORD
 EXTERNDEF highScore:DWORD
 EXTERNDEF gameLevel:DWORD
@@ -104,6 +105,7 @@ EXTERNDEF delayStep:DWORD   ; milliseconds removed for each level
 
 InitGame      PROTO
 PlaceObstacles PROTO
+ToggleObstacles PROTO
 IsObstacle    PROTO
 IsCellBlocked PROTO
 SpawnFood     PROTO
@@ -152,6 +154,7 @@ DrawCountdown PROTO
 DrawFrame PROTO
 DrawMenu PROTO
 DrawDifficulty PROTO
+DrawObstacleOption PROTO
 DrawGameOver PROTO
 DrawPaused PROTO
 DrawPauseMenu PROTO

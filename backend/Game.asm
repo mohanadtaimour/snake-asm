@@ -32,6 +32,7 @@ delayStep   DWORD DELAY_STEP         ; delay reduction per level
 obstacleX   BYTE MAX_OBSTACLES DUP(0) ; columns for fixed obstacles
 obstacleY   BYTE MAX_OBSTACLES DUP(0) ; rows for fixed obstacles
 obstacleCount DWORD 0                 ; number of active fixed obstacles
+obstaclesOn DWORD 1                   ; obstacle placement is enabled by default
 
 ; ---- Private data (only this file uses these) ----
 highScoreFile BYTE "highscore.dat",0 ; name of the high-score file
@@ -73,6 +74,19 @@ SetHard:
 SetDifficulty ENDP
 
 ;----------------------------------------------------------
+ToggleObstacles PROC
+;
+; Switches fixed obstacle generation on or off.
+; Receives: nothing
+; Returns: nothing (obstaclesOn changes between zero and one)
+;----------------------------------------------------------
+    pushfd                            ; preserve the flags changed by XOR
+    xor obstaclesOn, 1                ; flip the obstacle option
+    popfd                             ; restore the caller's flags
+    ret                               ; return without changing registers
+ToggleObstacles ENDP
+
+;----------------------------------------------------------
 InitGame PROC
 ;
 ; Starts a new game: seeds the random generator, resets the snake,
@@ -111,6 +125,8 @@ PlaceObstacles PROC
 ;----------------------------------------------------------
     pushad                          ; preserve all registers used for placement
     mov obstacleCount, 0             ; begin this round with no active obstacles
+    cmp obstaclesOn, 0                ; are fixed obstacles disabled?
+    je PlaceObstaclesDone            ; yes: keep the obstacle count at zero
 PlaceObstacleNext:
     cmp obstacleCount, OBSTACLE_COUNT ; have all required obstacles been placed?
     jae PlaceObstaclesDone          ; yes: finish placement

@@ -6,7 +6,7 @@ Computer Architecture 26EEC5303 Snake game using 32-bit x86 MASM and Irvine32.
 
 - Main menu with Easy, Normal and Hard difficulty.
 - 3-2-1 countdown before every round.
-- Normal food, golden food (3x points), timed bonus and poison items, and fixed obstacles.
+- Normal food, golden food (3x points), timed bonus and poison items, and optional fixed obstacles.
 - Pause menu (Resume, Restart, Quit to menu) and an R key to play again after game over.
 - Game-over stats screen with a NEW HIGH SCORE message and a saved high score.
 - Sound effects and looping background music using the Win32 Beep function.
@@ -52,6 +52,7 @@ TestGame.asm resets obstacleCount, foodType and specialType after every InitGame
 Main menu:
 - ENTER: play
 - 1, 2, 3: choose Easy, Normal or Hard
+- O: turn obstacles on or off
 - ESC: quit
 
 During play:
@@ -87,7 +88,7 @@ Food and items:
   - Poison (magenta X): minus 20 points, never below 0.
   - Special items do not grow the snake and do not count toward levels.
 - The level goes up every 5 normal or golden foods.
-- Eight fixed obstacles (gray blocks) are placed each round. The three rows around the snake's start row are kept clear. Hitting an obstacle, a wall or your own body ends the game.
+- Obstacles (eight fixed gray blocks) appear only when the Obstacles option is On; it does not depend on the difficulty; the three rows around the snake's start row stay clear. Hitting an obstacle, a wall or your own body ends the game.
 
 ## Score file
 
