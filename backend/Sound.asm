@@ -13,6 +13,8 @@ Beep PROTO, dwFreq:DWORD, dwDuration:DWORD
 CreateThread PROTO STDCALL, lpThreadAttributes:DWORD, dwStackSize:DWORD, lpStartAddress:DWORD, lpParameter:DWORD, dwCreationFlags:DWORD, lpThreadId:DWORD
 Sleep PROTO STDCALL, dwMilliseconds:DWORD
 
+MELODY_NOTES = 16
+
 .data
 musicEnabled DWORD 1                  ; music starts enabled
 musicThread DWORD 0                   ; zero means no music thread has started
@@ -42,7 +44,7 @@ MusicThreadLoop:
     mov edx, melodyDurations[ebx * 4]  ; EDX holds this note duration
     INVOKE Beep, eax, edx              ; play the note on the worker thread
     inc ebx                            ; advance to the next melody note
-    cmp ebx, LENGTHOF melodyFrequencies ; did the melody reach its end?
+    cmp ebx, MELODY_NOTES              ; did the melody reach its end?
     jb MusicThreadLoop                 ; no: continue with the next note
     mov ebx, 0                         ; yes: wrap back to the first note
     jmp MusicThreadLoop                ; repeat the melody

@@ -136,6 +136,9 @@ TestSpawnFood PROC
 ; Returns:  nothing
 ;---------------------------------------------------------------------
 	call InitGame                       ; start with a valid snake
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov ecx, 500                        ; run exactly 500 spawn trials
 SpawnTrialLoop:
 	call SpawnFood                      ; generate one valid food position
@@ -167,6 +170,9 @@ TestNormalAndEat PROC
 ; Returns:  nothing
 ;---------------------------------------------------------------------
 	call InitGame                       ; start a fresh game
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov score, 0                        ; set the score to a known value
 	mov foodsEaten, 0                   ; set food count to zero
 	mov gameLevel, 1                    ; set level 1
@@ -179,6 +185,9 @@ TestNormalAndEat PROC
 	CheckDword "Normal length unchanged", snakeLength, ebx
 
 	call InitGame                       ; reset for the eat case
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov score, 0                        ; score starts at zero
 	mov foodsEaten, 0                   ; no food eaten before this move
 	mov gameLevel, 1                    ; level 1 gives 10 points
@@ -214,6 +223,9 @@ TestFifthFood PROC
 ; Returns:  nothing
 ;---------------------------------------------------------------------
 	call InitGame                       ; start a fresh game
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov foodsEaten, 4                   ; this eat is the fifth food
 	mov gameLevel, 1                    ; begin before level-up
 	mov tickDelay, START_DELAY          ; begin at the starting delay
@@ -238,6 +250,9 @@ TestMinimumDelay PROC
 ; Returns:  nothing
 ;---------------------------------------------------------------------
 	call InitGame                       ; start a fresh game
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov foodsEaten, 100                 ; force a very high level
 	mov dl, snakeX[0]                   ; DL receives head column
 	inc dl                              ; place food directly ahead
@@ -264,6 +279,9 @@ TestHigherLevelScore PROC
 ; Returns:  nothing
 ;---------------------------------------------------------------------
 	call InitGame                       ; start a fresh game
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov score, 0                        ; start with no score
 	mov foodsEaten, 4                   ; next food is the fifth
 	mov gameLevel, 1                    ; level is 1 before this eat
@@ -297,21 +315,33 @@ WallCaseLoop:
 	jmp WallBottom                      ; otherwise bottom case
 WallLeft:
 	call InitGame                       ; initialize a clean snake
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov snakeX[0], 0                    ; put head at left edge
 	mov currentDir, DIR_LEFT            ; move left into wall
 	jmp WallRun                         ; run the collision
 WallRight:
 	call InitGame                       ; initialize a clean snake
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov snakeX[0], BOARD_WIDTH-1        ; put head at right edge
 	mov currentDir, DIR_RIGHT           ; move right into wall
 	jmp WallRun                         ; run the collision
 WallTop:
 	call InitGame                       ; initialize a clean snake
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov snakeY[0], 0                    ; put head at top edge
 	mov currentDir, DIR_UP              ; move up into wall
 	jmp WallRun                         ; run the collision
 WallBottom:
 	call InitGame                       ; initialize a clean snake
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov snakeY[0], BOARD_HEIGHT-1       ; put head at bottom edge
 	mov currentDir, DIR_DOWN            ; move down into wall
 WallRun:
@@ -332,6 +362,9 @@ TestSelfHit PROC
 ; Returns:  nothing
 ;---------------------------------------------------------------------
 	call InitGame                       ; initialize a clean snake
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov snakeLength, 4                  ; create a four segment loop
 	mov snakeX[0], 10                   ; head column
 	mov snakeY[0], 10                   ; head row
@@ -355,6 +388,9 @@ TestTailRule PROC
 ; Returns:  nothing
 ;---------------------------------------------------------------------
 	call InitGame                       ; initialize a clean snake
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov snakeLength, 4                  ; create a four segment square
 	mov snakeX[0], 10                   ; head column
 	mov snakeY[0], 10                   ; head row
@@ -386,6 +422,9 @@ TestPausedAndToggle PROC
 ; Returns:  nothing
 ;---------------------------------------------------------------------
 	call InitGame                       ; initialize a clean game
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov gameState, STATE_PAUSED         ; pause before the tick
 	movzx edx, snakeX[0]                ; save head column
 	call GameTick                       ; GameTick must do nothing
@@ -400,6 +439,9 @@ PausedMoved:
 PausedCheckDone:
 
 	call InitGame                       ; reset to playing
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	call TogglePause                    ; playing becomes paused
 	CheckDword "Toggle pause state", gameState, STATE_PAUSED
 	call TogglePause                    ; paused becomes playing
@@ -422,6 +464,9 @@ TestRegisterPreservation PROC
 ; Returns:  nothing
 ;---------------------------------------------------------------------
 	call InitGame                       ; initialize a normal game
+	mov obstacleCount, 0
+	mov foodType, FOOD_NORMAL
+	mov specialType, SPECIAL_NONE
 	mov ebx, 12345678h                  ; set EBX sentinel
 	mov ecx, 23456789h                  ; set ECX sentinel
 	mov edx, 3456789Ah                  ; set EDX sentinel
