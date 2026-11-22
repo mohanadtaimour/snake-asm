@@ -13,6 +13,7 @@ Test number | What is tested | Input or setup | Expected output | Actual output
 9 | Maximum length | Set length to MAX_SNAKE_LEN and grow | Length stays at maximum | 
 
 Game.asm
+(TestGame.asm resets obstacleCount, foodType and specialType after InitGame so results are repeatable.)
 Test number | What is tested | Input or setup | Expected output | Actual output
 1 | InitGame | Set old high score and call InitGame | Score 0, level 1, delay 150, playing, length 3, high score unchanged | 
 2 | SpawnFood 500 times | Call SpawnFood 500 times | Every food is inside board and not on the snake | 
@@ -32,21 +33,41 @@ Test number | What is tested | Input or setup | Expected output | Actual output
 16 | Missing file | Delete highscore.dat and load | High score becomes 0 | 
 17 | Corrupt file | Write only two bytes and load | High score becomes 0 | 
 18 | High score monotonic | Set old high score 500 and final score 100 | High score remains 500 | 
+19 | SetDifficulty | Call with DIFF_EASY, DIFF_NORMAL and DIFF_HARD | startDelay/delayStep become 200/10, 150/15 and 100/12 | 
+20 | SetDifficulty invalid | Call with 3 and -1 | Difficulty, startDelay and delayStep stay unchanged | 
+21 | Difficulty in a new game | Set Hard, call InitGame | tickDelay is 100 | 
+22 | PlaceObstacles | Call PlaceObstacles 200 times | Count is OBSTACLE_COUNT, no duplicates, none in the three start-corridor rows | 
+23 | Obstacle hit | Put an obstacle in the next head cell | TICK_DIED and STATE_GAMEOVER | 
+24 | IsCellBlocked | Test snake, obstacle, food and special cells and a free cell | 1 for the first four, 0 for the free cell | 
+25 | Golden food | Set foodType FOOD_GOLDEN at level 1 and eat | Score +30, length +1, one food eaten | 
+26 | Bonus item | Put a bonus special ahead and move onto it | TICK_BONUS, score +50 times level, no growth, special removed | 
+27 | Poison item | Put a poison special ahead with score 100 | TICK_POISON, score 80, no growth, special removed | 
+28 | Poison clamp | Poison with score 5 | Score becomes 0, not a huge number | 
+29 | Special expiry | Give a special 100 ms left and tick with tickDelay 150 | specialType becomes SPECIAL_NONE | 
+30 | Special timer paused | Set STATE_PAUSED and call GameTick | specialTimeLeft does not change | 
+31 | Special spawn | Eat the third food with no special active | A special item appears on a free cell | 
 
 Display.asm
 Test number | What is tested | Input or setup | Expected output | Actual output
-1 | DrawBorder | Call DrawBorder | Gray # border around the board | 
+1 | DrawBorder | Call DrawBorder | Light-blue block border around the board | 
 2 | DrawHUD score 99 | Set score 99 and call DrawHUD | Score 99 printed in yellow with no extras | 
 3 | DrawHUD 99 to 100 | Set score 100 and call DrawHUD | Score 100 printed and old text is fully replaced | 
 4 | DrawHUD 100 to 90 | Set score 90 and call DrawHUD | No stray hundred digit remains | 
-5 | DrawSnake | Normal 3-segment snake | Head O, bodies o, green and light-green colors | 
-6 | DrawFood | Valid food position | Red * at food position | 
+5 | DrawSnake | Normal 3-segment snake | Yellow head O, body cells striped green and light green by cell position | 
+6 | DrawFood | Valid food position, normal and golden | Red @ for normal food, yellow $ for golden food | 
 7 | DrawFrame normal | TICK_OK normal move | Tail erased, segment 1 and head redrawn | 
 8 | DrawFrame eat | TICK_ATE move | Frame updates and food and HUD redraw | 
 9 | DrawMenu | Call DrawMenu | SNAKE title, high score, choices and controls visible | 
-10 | DrawGameOver no record | EAX = 0 | GAME OVER, score, high score, replay and menu lines | 
+10 | DrawGameOver no record | EAX = 0 | GAME OVER, score, high score, foods eaten, final length, level reached, ENTER or R replay and menu lines | 
 11 | DrawGameOver record | EAX = 1 | NEW HIGH SCORE also appears | 
-12 | DrawPaused | EAX = 1 then 0 | PAUSED appears and spaces hide it | 
+12 | DrawPaused | EAX = 1 then 0 | PAUSED appears and spaces hide it (no longer used by Main) | 
+13 | DrawObstacles | Place obstacles and call it | Gray blocks at every obstacle cell | 
+14 | DrawSpecial | Bonus then poison, then SPECIAL_NONE | % in cyan, X in magenta, old cell erased when gone | 
+15 | DrawSpecial blink | specialTimeLeft below 2000 | Item blinks every 250 ms | 
+16 | DrawCountdown | EAX = 3, 2, 1, then 0 | Digit shown above the snake, then erased | 
+17 | DrawPauseMenu | EAX = 0, 1, 2 | Box with PAUSED and three items; selected item is yellow with > | 
+18 | DrawDifficulty | Select each difficulty | Chosen name is yellow, others white | 
+19 | DrawFrame special | TICK_BONUS and TICK_POISON | HUD refreshes; special item erased and head not erased | 
 
 Input.asm
 Test number | What is tested | Input or setup | Expected output | Actual output
@@ -60,6 +81,22 @@ Test number | What is tested | Input or setup | Expected output | Actual output
 8 | ESC read | Press ESC | ReadInput returns INPUT_QUIT | 
 9 | WaitMenuChoice ENTER | Press ENTER in menu waiter | WaitMenuChoice returns MENU_PLAY | 
 10 | WaitMenuChoice ESC | Press ESC in menu waiter | WaitMenuChoice returns MENU_QUIT | 
+11 | M key | Press M or m while playing | Background music toggles on or off | 
+12 | MenuInput difficulty | Press 1, 2, 3 in the menu | Difficulty changes and the menu line is redrawn; menu keeps waiting | 
+13 | MenuInput ENTER and ESC | Press ENTER, then ESC | MENU_PLAY, then MENU_QUIT | 
+14 | WaitGameOverChoice | Press ENTER, R, r, then ESC | MENU_PLAY for the first three, MENU_QUIT for ESC | 
+15 | RunPauseMenu navigation | Press Down, Down, Down, Up | Selection wraps: Restart, Quit, Resume, Quit | 
+16 | RunPauseMenu choices | Press ENTER on each item; press P; press ESC | Returns PAUSE_RESUME, PAUSE_RESTART, PAUSE_QUIT; P and ESC return PAUSE_RESUME | 
+
+Sound.asm
+Test number | What is tested | Input or setup | Expected output | Actual output
+1 | PlayEatSound | Call it with sentinel registers | Short high beep; all registers unchanged | 
+2 | PlayDieSound | Call it | Three descending tones; all registers unchanged | 
+3 | PlayBonusSound and PlayPoisonSound | Call each | Two rising tones, then one low tone | 
+4 | PlayCountdownBeep and PlayGoBeep | Call each | Short beep, then longer higher beep | 
+5 | Background music | Start a game | A 16-note melody loops, using all 16 notes | 
+6 | Music state | Pause, open menu, die | Music stops outside STATE_PLAYING and resumes when playing again | 
+7 | ToggleMusic | Press M twice | Music stops, then starts again | 
 
 Whole game
 Test number | What is tested | Input or setup | Expected output | Actual output
@@ -69,11 +106,24 @@ Test number | What is tested | Input or setup | Expected output | Actual output
 4 | ESC menu | Die, press ESC | Game returns to menu | 
 5 | ESC during play | Press ESC during active game | Save high score and return to menu | 
 6 | ESC exit | Quit from menu | Program prints goodbye and exits | 
-7 | Pause and resume | Press P twice | PAUSED appears and disappears | 
+7 | Pause and resume | Press P, then choose Resume | Pause menu appears and the game continues after it closes | 
 8 | Score zero | Start game and avoid food | Score remains 0 | 
 9 | Score 99999 | Set or reach score 99999 | HUD prints 99999 and trailing text clears old characters | 
 10 | Food by wall | Spawn or set food next to a wall | Food appears correctly inside the playable board | 
 11 | Long snake | Set or grow a long snake | Long segments draw safely and frame handles it | 
 12 | Missing high score file | Delete file and start | High score is 0 | 
-13 | Pause then ESC | Pause, press ESC | Quit logic saves and returns to menu | 
+13 | Pause then ESC | Pause, press ESC | Pause menu closes and the game resumes | 
 14 | Replay after wall death | Hit a wall, enter replay | New snake and fresh score are initialized | 
+15 | Difficulty choice | Press 1, 2, 3 in the menu and start each | Speed matches Easy, Normal and Hard | 
+16 | Countdown | Start or replay a game | 3, 2, 1 with beeps, then a go beep, then the snake moves | 
+17 | Keys during countdown | Press arrows during the countdown | They are ignored | 
+18 | Play again with R | Die, press R | New game starts after the countdown | 
+19 | Pause menu Restart | Pause, choose Restart | New game starts with score 0 | 
+20 | Pause menu Quit | Pause, choose Quit to menu | High score saved, main menu appears | 
+21 | Game-over stats | Die after eating several foods | Foods eaten, final length and level reached are correct | 
+22 | New high score | Beat the saved record | NEW HIGH SCORE appears on the game-over screen | 
+23 | Obstacles | Drive into an obstacle | Game over | 
+24 | Golden food | Eat a golden food | Score rises by 3 times the normal points | 
+25 | Special items | Eat the third food, then wait 6 seconds | A bonus or poison item appears, blinks near the end and vanishes | 
+26 | Poison and bonus | Eat each special item | Score drops by 20 (not below 0) or rises by 50 times the level | 
+27 | Music toggle | Press M during play | Music stops and starts | 
