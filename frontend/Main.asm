@@ -10,7 +10,6 @@ INCLUDE Irvine32.inc
 INCLUDE SnakeDefs.inc
 
 .data
-prevState DWORD STATE_MENU
 startTime DWORD 0
 prevHighScore DWORD 0
 goodbyeText BYTE "Goodbye!",0
@@ -25,11 +24,12 @@ main PROC
 ; Returns:  nothing
 ;---------------------------------------------------------------------
 	call LoadHighScore                 ; load the record once before the menu
+	call StartMusic                     ; start the background music worker
 
 MenuLoop:
 	mov gameState, STATE_MENU          ; show menu state while choosing
 	call DrawMenu                      ; clear and draw the menu
-	call WaitMenuChoice                ; block until ENTER or ESC
+	call MenuInput                     ; wait for choice or difficulty selection
 	cmp eax, MENU_QUIT                 ; did the player choose quit?
 	je ExitGame                        ; yes: skip the new game
 
@@ -37,15 +37,32 @@ NewGame:
 	call InitGame                      ; reset the snake and game variables
 	mov eax, highScore                 ; EAX holds the record before this game
 	mov prevHighScore, eax             ; remember it for the new-record check
-	mov prevState, STATE_PLAYING       ; initialize the pause state comparison
 	call DrawAll                       ; draw the complete new game once
+	mov esi, 3                          ; begin the three-second countdown
+CountdownLoop:
+	mov eax, esi                        ; EAX holds the digit to display
+	call DrawCountdown                 ; show the current countdown digit
+	call PlayCountdownBeep             ; play the countdown tone
+	mov eax, 800                        ; wait 800 milliseconds for this digit
+	call Delay                         ; hold the digit before counting down
+	dec esi                            ; select the next countdown digit
+	jnz CountdownLoop                  ; display 2 and 1 after 3
+	mov eax, 0                         ; zero asks DrawCountdown to erase the digit
+	call DrawCountdown                 ; clear the final countdown digit
+	call PlayGoBeep                    ; signal that the round is starting
+DrainCountdownKeys:
+	call ReadKey                       ; inspect the keyboard buffer directly
+	jnz DrainCountdownKeys             ; keep draining until ReadKey sets ZF
 
 WaitPhase:
+
 	call GetMseconds                   ; read the millisecond clock
 	mov startTime, eax                 ; remember the timing phase start
 
 WaitLoop:
 	call ReadInput                     ; drain waiting keys
+	cmp gameState, STATE_PAUSED        ; did P pause the game?
+	je PauseMenuFlow                   ; yes: show the pause menu
 	cmp eax, INPUT_QUIT                ; did ESC stop the game?
 	je QuitFromGame                    ; yes: save and return to the menu
 
@@ -57,36 +74,48 @@ WaitLoop:
 	cmp eax, tickDelay                 ; has one game tick elapsed?
 	jb WaitLoop                        ; no: keep checking keyboard input
 
-PauseHandling:
-	mov eax, gameState                 ; EAX is the current state
-	cmp eax, prevState                 ; did the state change this frame?
-	je PauseStateSaved                 ; no: keep the previous state
-
-	cmp eax, STATE_PAUSED              ; did it change to PAUSED?
-	jne CheckResumed                   ; no: check for resumed playing
-	mov eax, 1                        ; EAX asks DrawPaused to show PAUSED
-	call DrawPaused                    ; show the paused message
-	jmp PauseStateSaved                ; continue to the state save
-
-CheckResumed:
-	cmp eax, STATE_PLAYING             ; did it change back to PLAYING?
-	jne PauseStateSaved                ; no: no pause message change
-	mov eax, 0                        ; EAX asks DrawPaused to hide PAUSED
-	call DrawPaused                    ; erase the paused message
-
-PauseStateSaved:
-	mov eax, gameState                 ; EAX holds the state to remember
-	mov prevState, eax                 ; save it for the next frame
-
 	call GameTick                      ; run one backend game tick
 	cmp eax, TICK_DIED                 ; did the snake die?
-	je GameOverScreen                  ; yes: show the game-over screen
+	jne CheckEatSound                  ; no: check for an eating result
+	call PlayDieSound                  ; play the death tones
+	jmp GameOverScreen                 ; show the game-over screen
 
+CheckEatSound:
+	cmp eax, TICK_ATE                  ; did the snake eat this tick?
+	jne CheckBonusSound                ; no: check for a bonus item
+	call PlayEatSound                  ; play the eating tone
+	jmp CheckTickState                 ; sound routine preserves the tick result
+
+CheckBonusSound:
+	cmp eax, TICK_BONUS                ; did the snake collect a bonus?
+	jne CheckPoisonSound               ; no: check for poison
+	call PlayBonusSound                ; play the bonus tone
+	jmp CheckTickState                 ; sound routine preserves the tick result
+
+CheckPoisonSound:
+	cmp eax, TICK_POISON               ; did the snake collect poison?
+	jne CheckTickState                 ; no: continue to state handling
+	call PlayPoisonSound               ; play the poison tone
+
+CheckTickState:
 	cmp gameState, STATE_PLAYING       ; should the normal frame be drawn?
 	jne WaitPhase                      ; paused: skip all incremental drawing
 
 	call DrawFrame                     ; incrementally draw the moving snake
 	jmp WaitPhase                      ; start the next timing phase
+
+PauseMenuFlow:
+	call RunPauseMenu                  ; get the selected pause-menu action
+	cmp eax, PAUSE_RESUME              ; did the player choose Resume?
+	je ResumeFromPause                 ; yes: return to active play
+	cmp eax, PAUSE_RESTART             ; did the player choose Restart?
+	je NewGame                         ; yes: initialize a new round
+	jmp QuitFromGame                   ; Quit returns to the main menu
+
+ResumeFromPause:
+	call TogglePause                   ; change the state back to PLAYING
+	call DrawAll                       ; redraw the board without the pause menu
+	jmp WaitPhase                      ; begin a fresh game timing phase
 
 QuitFromGame:
 	call SaveHighScore                 ; save a mid-game record before leaving
@@ -105,7 +134,7 @@ NotNewHighScore:
 
 ShowGameOver:
 	call DrawGameOver                  ; draw game-over details and flag
-	call WaitMenuChoice                ; wait for ENTER or ESC
+	call WaitGameOverChoice            ; wait for ENTER, R, or ESC
 	cmp eax, MENU_PLAY                 ; did the player choose replay?
 	je NewGame                         ; yes: start a new game
 	mov gameState, STATE_MENU          ; ESC returns to the menu state

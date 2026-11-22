@@ -16,6 +16,7 @@
     <MASM Include="frontend\Main.asm" />
     <MASM Include="backend\Snake.asm" />
     <MASM Include="backend\Game.asm" />
+    <MASM Include="backend\Sound.asm" />
     <MASM Include="frontend\TestDisplay.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

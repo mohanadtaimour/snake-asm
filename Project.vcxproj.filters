@@ -15,6 +15,9 @@
 	<MASM Include="backend\Game.asm">
 	  <Filter>Backend</Filter>
 	</MASM>
+	<MASM Include="backend\Sound.asm">
+	  <Filter>Backend</Filter>
+	</MASM>
 	<MASM Include="backend\TestSnake.asm">
 	  <Filter>Backend</Filter>
 	</MASM>
